@@ -1,5 +1,6 @@
 package uj.wmii.pwj.spreadsheet;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -17,6 +18,32 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SpreadsheetTest {
 
     private static final String[] listFiles = {"example", "numbers", "two-timer", "walker", "ops", "ref2expr"};
+
+    @Test
+    void testParseFormulaicCell() {
+        Spreadsheet spreadsheet = new Spreadsheet();
+        String[] test1 = spreadsheet.parseFormulaicCell("=SUM($A1,$B2)");
+        String[] test2 = spreadsheet.parseFormulaicCell("=MOD(36,$101)");
+
+        assertThat(test1[0]).isEqualTo("SUM");
+        assertThat(test1[1]).isEqualTo("$A1");
+        assertThat(test1[2]).isEqualTo("$B2");
+        assertThat(test2[0]).isEqualTo("MOD");
+        assertThat(test2[1]).isEqualTo("36");
+        assertThat(test2[2]).isEqualTo("$101");
+    }
+
+    @Test
+    void testParseReference() {
+        Spreadsheet spreadsheet = new Spreadsheet();
+        Integer[] test1 = spreadsheet.parseReference("$A1");
+        Integer[] test2 = spreadsheet.parseReference("$Z910");
+
+        assertThat(test1[0]).isEqualTo(0);
+        assertThat(test1[1]).isEqualTo(0);
+        assertThat(test2[0]).isEqualTo(909);
+        assertThat(test2[1]).isEqualTo(25);
+    }
 
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("spreadsheetInput")
